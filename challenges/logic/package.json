@@ -1,7 +1,7 @@
 {
-  "name": "logic",
+  "name": "manole-logic-challenge",
   "version": "1.0.0",
-  "description": "## Objetivo",
+  "description": "Analyze numbers challenge using TypeScript and Jest",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -15,6 +15,6 @@
     "jest": "^30.4.2",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^5.7.3"
   }
 }
