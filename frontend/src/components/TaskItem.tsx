@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  ActionIcon,
   Button,
   Card,
   Group,
@@ -13,6 +14,8 @@ import {
 import {
   IconAlertTriangle,
   IconCalendar,
+  IconCircle,
+  IconCircleCheck,
   IconTrash,
 } from "@tabler/icons-react";
 import { TaskStatusBadge } from "./TaskStatusBadge";
@@ -21,16 +24,20 @@ import type { Task, TaskStatus } from "../types/task";
 
 type TaskItemProps = {
   task: Task;
+  isSelected?: boolean;
   isChangingStatus?: boolean;
   isDeleting?: boolean;
+  onToggleSelect: (id: number) => void;
   onStatusChange: (id: number, status: TaskStatus) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
 };
 
 export function TaskItem({
   task,
+  isSelected = false,
   isChangingStatus = false,
   isDeleting = false,
+  onToggleSelect,
   onStatusChange,
   onDelete,
 }: TaskItemProps) {
@@ -44,12 +51,37 @@ export function TaskItem({
 
   return (
     <>
-      <Card component="li" className="task-card" radius="md" withBorder>
+      <Card
+        component="li"
+        className={isSelected ? "task-card task-card-selected" : "task-card"}
+        radius="md"
+        withBorder
+      >
         <Stack gap="md" h="100%">
           <Group justify="space-between" align="flex-start" gap="sm">
-            <Title order={3} className="task-title">
-              {task.title}
-            </Title>
+            <Group className="task-heading" gap="sm" align="flex-start">
+              <ActionIcon
+                aria-label={
+                  isSelected ? "Remover seleção" : "Selecionar tarefa"
+                }
+                className="task-select-action"
+                color={isSelected ? "indigo" : "gray"}
+                radius="xl"
+                size="sm"
+                variant="subtle"
+                onClick={() => onToggleSelect(task.id)}
+              >
+                {isSelected ? (
+                  <IconCircleCheck size={22} />
+                ) : (
+                  <IconCircle size={22} />
+                )}
+              </ActionIcon>
+
+              <Title order={3} className="task-title">
+                {task.title}
+              </Title>
+            </Group>
             <TaskStatusBadge status={task.status} />
           </Group>
 

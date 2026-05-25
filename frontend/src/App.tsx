@@ -2,12 +2,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Box,
+  Button,
   Container,
+  Group,
   Loader,
+  Modal,
   Paper,
   Stack,
   Text,
+  ThemeIcon,
 } from "@mantine/core";
+import { IconAlertTriangle, IconTrash } from "@tabler/icons-react";
 import {
   AppHero,
   TaskFilters,
@@ -36,10 +41,13 @@ function App() {
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [changingTaskId, setChangingTaskId] = useState<number | null>(null);
   const [deletingTaskId, setDeletingTaskId] = useState<number | null>(null);
+  const [isDeletingSelected, setIsDeletingSelected] = useState(false);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [error, setError] = useState("");
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -71,6 +79,11 @@ function App() {
         });
 
         setTasks(response.data);
+        setSelectedTaskIds((currentSelectedIds) =>
+          currentSelectedIds.filter((taskId) =>
+            response.data.some((task) => task.id === taskId),
+          ),
+        );
         setTotalPages(Math.max(response.pagination.totalPages, 1));
         setTotalTasks(response.pagination.total);
       } catch {
@@ -134,6 +147,9 @@ function App() {
         setPage(nextPage);
       }
 
+      setSelectedTaskIds((currentSelectedIds) =>
+        currentSelectedIds.filter((taskId) => taskId !== id),
+      );
       setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
       setTotalTasks((currentTotal) => Math.max(currentTotal - 1, 0));
       await loadTasks({
@@ -144,6 +160,39 @@ function App() {
     } finally {
       setDeletingTaskId(null);
     }
+  }
+
+  async function handleDeleteSelectedTasks() {
+    try {
+      setIsDeletingSelected(true);
+
+      await Promise.all(selectedTaskIds.map((taskId) => deleteTask(taskId)));
+
+      const nextPage =
+        selectedTaskIds.length >= tasks.length && page > 1 ? page - 1 : page;
+
+      if (nextPage !== page) {
+        setPage(nextPage);
+      }
+
+      setSelectedTaskIds([]);
+      setIsBulkDeleteModalOpen(false);
+      await loadTasks({
+        nextPage,
+        nextStatus: selectedStatus,
+        nextSearch: selectedSearch,
+      });
+    } finally {
+      setIsDeletingSelected(false);
+    }
+  }
+
+  function handleToggleTaskSelection(id: number) {
+    setSelectedTaskIds((currentSelectedIds) =>
+      currentSelectedIds.includes(id)
+        ? currentSelectedIds.filter((taskId) => taskId !== id)
+        : [...currentSelectedIds, id],
+    );
   }
 
   function handleSearchChange(value: string) {
@@ -227,16 +276,21 @@ function App() {
               <Stack gap="lg">
                 <TaskListHeader
                   totalTasks={totalTasks}
+                  selectedCount={selectedTaskIds.length}
                   isRefreshing={isRefreshing}
+                  isDeletingSelected={isDeletingSelected}
                   onCreateTask={() => setIsFormOpen(true)}
+                  onDeleteSelected={() => setIsBulkDeleteModalOpen(true)}
                 />
 
                 <TaskList
                   tasks={tasks}
+                  selectedTaskIds={selectedTaskIds}
                   changingTaskId={changingTaskId}
                   deletingTaskId={deletingTaskId}
                   hasActiveFilters={hasActiveFilters}
                   onCreateTask={() => setIsFormOpen(true)}
+                  onToggleTaskSelection={handleToggleTaskSelection}
                   onStatusChange={handleStatusChange}
                   onDelete={handleDeleteTask}
                 />
@@ -258,6 +312,61 @@ function App() {
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleCreateTask}
       />
+
+      <Modal
+        opened={isBulkDeleteModalOpen}
+        onClose={() => setIsBulkDeleteModalOpen(false)}
+        title="Excluir tarefas"
+        centered
+        radius="md"
+        size="sm"
+      >
+        <Stack gap="md">
+          <Paper className="delete-confirmation-box" radius="md">
+            <Group align="center" gap="md" wrap="nowrap">
+              <ThemeIcon
+                color="red"
+                variant="light"
+                radius="xl"
+                size={46}
+                className="delete-confirmation-icon"
+              >
+                <IconAlertTriangle size={26} />
+              </ThemeIcon>
+
+              <Stack gap={4}>
+                <Text fw={700} className="delete-confirmation-title">
+                  Tem certeza que gostaria de excluir as tarefas selecionadas?
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedTaskIds.length} tarefas serão removidas. Esta ação
+                  não pode ser desfeita.
+                </Text>
+              </Stack>
+            </Group>
+          </Paper>
+
+          <Group justify="flex-end" gap="sm" mt="xs">
+            <Button
+              variant="default"
+              type="button"
+              onClick={() => setIsBulkDeleteModalOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              color="red"
+              type="button"
+              leftSection={<IconTrash size={16} />}
+              loading={isDeletingSelected}
+              className="delete-confirmation-action"
+              onClick={() => void handleDeleteSelectedTasks()}
+            >
+              Excluir tarefas
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Box>
   );
 }

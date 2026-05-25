@@ -1,16 +1,22 @@
 import { Button, Group, Loader, Stack, Text } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 
 type TaskListHeaderProps = {
   totalTasks: number;
+  selectedCount: number;
   isRefreshing: boolean;
+  isDeletingSelected: boolean;
   onCreateTask: () => void;
+  onDeleteSelected: () => void;
 };
 
 export function TaskListHeader({
   totalTasks,
+  selectedCount,
   isRefreshing,
+  isDeletingSelected,
   onCreateTask,
+  onDeleteSelected,
 }: TaskListHeaderProps) {
   return (
     <Group justify="space-between" align="center" gap="md">
@@ -28,14 +34,29 @@ export function TaskListHeader({
         )}
       </Stack>
 
-      <Button
-        className="primary-action"
-        size="md"
-        leftSection={<IconPlus size={18} />}
-        onClick={onCreateTask}
-      >
-        Criar tarefa
-      </Button>
+      <Group gap="sm">
+        {selectedCount > 1 && (
+          <Button
+            color="red"
+            size="md"
+            variant="light"
+            leftSection={<IconTrash size={18} />}
+            loading={isDeletingSelected}
+            onClick={onDeleteSelected}
+          >
+            Apagar selecionadas ({selectedCount})
+          </Button>
+        )}
+
+        <Button
+          className="primary-action"
+          size="md"
+          leftSection={<IconPlus size={18} />}
+          onClick={onCreateTask}
+        >
+          Criar tarefa
+        </Button>
+      </Group>
     </Group>
   );
 }

@@ -5,20 +5,24 @@ import type { Task, TaskStatus } from "../types/task";
 
 type TaskListProps = {
   tasks: Task[];
+  selectedTaskIds: number[];
   changingTaskId?: number | null;
   deletingTaskId?: number | null;
   hasActiveFilters: boolean;
   onCreateTask: () => void;
+  onToggleTaskSelection: (id: number) => void;
   onStatusChange: (id: number, status: TaskStatus) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
 };
 
 export function TaskList({
   tasks,
+  selectedTaskIds,
   changingTaskId,
   deletingTaskId,
   hasActiveFilters,
   onCreateTask,
+  onToggleTaskSelection,
   onStatusChange,
   onDelete,
 }: TaskListProps) {
@@ -55,8 +59,10 @@ export function TaskList({
         <TaskItem
           key={task.id}
           task={task}
+          isSelected={selectedTaskIds.includes(task.id)}
           isChangingStatus={changingTaskId === task.id}
           isDeleting={deletingTaskId === task.id}
+          onToggleSelect={onToggleTaskSelection}
           onStatusChange={onStatusChange}
           onDelete={onDelete}
         />
