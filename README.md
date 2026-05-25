@@ -24,6 +24,7 @@ A aplicação foi construída utilizando React no frontend e Node.js com Express
 - React
 - TypeScript
 - Vite
+- Mantine UI
 - Fetch API
 
 ### Backend
@@ -64,10 +65,15 @@ A aplicação foi construída utilizando React no frontend e Node.js com Express
 - Criação de tarefas
 - Atualização de status
 - Exclusão de tarefas
+- Filtro por status
+- Pesquisa por título ou descrição na página atual
+- Paginação integrada com a API
 - Loading state
 - Tratamento de erros
-- UX básica
+- Empty state
+- UX amigável
 - Responsividade
+- Testes automatizados básicos
 
 ---
 
@@ -170,6 +176,13 @@ cd backend
 npm test
 ```
 
+### Frontend
+
+```bash
+cd frontend
+npm test
+```
+
 ### Challenge de lógica
 
 ```bash
@@ -207,6 +220,18 @@ GET /tasks?status=pendente
 GET /tasks?page=1&limit=10
 ```
 
+### Busca por título ou descrição
+
+```http
+GET /tasks?search=typeorm
+```
+
+### Combinando busca, filtro e paginação
+
+```http
+GET /tasks?search=api&status=pendente&page=1&limit=6
+```
+
 ---
 
 ### Buscar tarefa por ID
@@ -241,12 +266,28 @@ Body:
 PUT /tasks/:id
 ```
 
+Body:
+
+```json
+{
+  "title": "Estudar TypeORM",
+  "description": "Atualizar tarefa no CRUD",
+  "status": "em andamento"
+}
+```
+
 ---
 
 ### Excluir tarefa
 
 ```http
 DELETE /tasks/:id
+```
+
+Resposta esperada:
+
+```txt
+204 No Content
 ```
 
 ---
@@ -256,6 +297,12 @@ DELETE /tasks/:id
 ### React + Vite
 
 O frontend foi desenvolvido utilizando React com Vite devido à simplicidade de configuração, rapidez no ambiente de desenvolvimento e excelente experiência para aplicações SPA.
+
+---
+
+### Mantine UI
+
+Mantine UI foi adotado para melhorar a interface sem alterar a arquitetura do frontend. A escolha permite usar componentes acessíveis e consistentes para formulário, modal, cards, filtros, badges e paginação.
 
 ---
 
@@ -287,16 +334,31 @@ Os testes automatizados utilizam Jest e Supertest para validar os principais flu
 
 Algumas melhorias que poderiam ser implementadas futuramente:
 
-- paginação no frontend;
-- filtros visuais de status;
 - autenticação de usuários;
 - dark mode;
 - deploy da aplicação;
 - notificações/toasts;
-- testes frontend;
 - utilização de React Query;
 - melhorias de acessibilidade;
-- melhorias visuais na interface.
+- ordenação por data ou status;
+- ampliar a cobertura de testes no frontend;
+
+---
+
+## Pontos fortes
+
+- API REST simples, com CRUD completo, validação básica, persistência em SQLite e status HTTP adequados.
+- Diferenciais implementados no backend: paginação, filtro por status, busca por texto, testes automatizados e Docker.
+- Frontend em React com TypeScript, hooks, componentes separados e estados de loading, erro e vazio.
+- Interface responsiva com Mantine UI, badges de status, filtro, busca global e paginação usando os dados da API.
+- Testes básicos do frontend cobrindo título, empty state, abertura do modal e validação do botão de criação.
+
+---
+
+## Limitações conhecidas
+
+- Não há autenticação/autorização porque esse fluxo não faz parte do escopo obrigatório do desafio.
+- O banco SQLite usa `synchronize: true`, adequado para teste técnico e desenvolvimento local, mas não recomendado para produção.
 
 ---
 

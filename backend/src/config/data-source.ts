@@ -4,7 +4,7 @@ import { Task } from "../entities/Task";
 
 export const AppDataSource = new DataSource({
   type: "better-sqlite3",
-  database: "database.sqlite",
+  database: process.env.NODE_ENV === "test" ? ":memory:" : "database.sqlite",
   synchronize: true,
   logging: false,
   entities: [Task],

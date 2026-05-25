@@ -133,4 +133,39 @@ describe("Tasks", () => {
     expect(response.body.data).toHaveLength(1);
     expect(response.body.data[0].status).toBe("concluída");
   });
+
+  it("should search tasks by title or description before pagination", async () => {
+    const commonTasks = [
+      "Tarefa comum 1",
+      "Tarefa comum 2",
+      "Tarefa comum 3",
+      "Tarefa comum 4",
+      "Tarefa comum 5",
+      "Tarefa comum 6",
+      "Tarefa comum 7",
+    ];
+
+    await Promise.all(
+      commonTasks.map((title) =>
+        request(app).post("/tasks").send({
+          title,
+          description: "Sem termo especial",
+          status: "pendente",
+        }),
+      ),
+    );
+
+    await request(app).post("/tasks").send({
+      title: "Revisar documentação",
+      description: "Garantir busca global no backend",
+      status: "pendente",
+    });
+
+    const response = await request(app).get("/tasks?search=documentação&limit=6");
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveLength(1);
+    expect(response.body.data[0].title).toBe("Revisar documentação");
+    expect(response.body.pagination.total).toBe(1);
+  });
 });

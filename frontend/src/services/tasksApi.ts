@@ -8,10 +8,33 @@ import type {
 
 const API_URL = "http://localhost:3333";
 
-export async function getTasks(status?: TaskStatus): Promise<TasksResponse> {
-  const query = status ? `?status=${encodeURIComponent(status)}` : "";
+type GetTasksParams = {
+  status?: TaskStatus;
+  search?: string;
+  page?: number;
+  limit?: number;
+};
 
-  const response = await fetch(`${API_URL}/tasks${query}`);
+export async function getTasks({
+  status,
+  search,
+  page = 1,
+  limit = 6,
+}: GetTasksParams = {}): Promise<TasksResponse> {
+  const searchParams = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (status) {
+    searchParams.set("status", status);
+  }
+
+  if (search?.trim()) {
+    searchParams.set("search", search.trim());
+  }
+
+  const response = await fetch(`${API_URL}/tasks?${searchParams.toString()}`);
 
   if (!response.ok) {
     throw new Error("Erro ao carregar tarefas");
