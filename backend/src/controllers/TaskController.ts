@@ -36,11 +36,17 @@ export class TaskController {
   }
 
   static async list(request: Request, response: Response) {
-    const { status, page = "1", limit = "10" } = request.query;
+    const { status, search, page = "1", limit = "10" } = request.query;
 
     if (status !== undefined && !isValidStatus(status)) {
       return response.status(400).json({
         message: "Invalid status",
+      });
+    }
+
+    if (search !== undefined && typeof search !== "string") {
+      return response.status(400).json({
+        message: "Search must be a string",
       });
     }
 
@@ -58,14 +64,24 @@ export class TaskController {
       });
     }
 
-    const [tasks, total] = await taskRepository.findAndCount({
-      where: status ? { status: status as TaskStatus } : {},
-      order: {
-        createdAt: "DESC",
-      },
-      skip: (pageNumber - 1) * limitNumber,
-      take: limitNumber,
-    });
+    const queryBuilder = taskRepository
+      .createQueryBuilder("task")
+      .orderBy("task.createdAt", "DESC")
+      .skip((pageNumber - 1) * limitNumber)
+      .take(limitNumber);
+
+    if (status) {
+      queryBuilder.andWhere("task.status = :status", { status });
+    }
+
+    if (search?.trim()) {
+      queryBuilder.andWhere(
+        "(LOWER(task.title) LIKE :search OR LOWER(task.description) LIKE :search)",
+        { search: `%${search.trim().toLowerCase()}%` },
+      );
+    }
+
+    const [tasks, total] = await queryBuilder.getManyAndCount();
 
     return response.status(200).json({
       data: tasks,

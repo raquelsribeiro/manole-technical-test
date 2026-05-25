@@ -220,6 +220,18 @@ GET /tasks?status=pendente
 GET /tasks?page=1&limit=10
 ```
 
+### Busca por título ou descrição
+
+```http
+GET /tasks?search=typeorm
+```
+
+### Combinando busca, filtro e paginação
+
+```http
+GET /tasks?search=api&status=pendente&page=1&limit=6
+```
+
 ---
 
 ### Buscar tarefa por ID
@@ -329,23 +341,21 @@ Algumas melhorias que poderiam ser implementadas futuramente:
 - utilização de React Query;
 - melhorias de acessibilidade;
 - ordenação por data ou status;
-- busca no backend para pesquisar em todo o conjunto paginado.
 
 ---
 
 ## Pontos fortes
 
 - API REST simples, com CRUD completo, validação básica, persistência em SQLite e status HTTP adequados.
-- Diferenciais implementados no backend: paginação, filtro por status, testes automatizados e Docker.
+- Diferenciais implementados no backend: paginação, filtro por status, busca por texto, testes automatizados e Docker.
 - Frontend em React com TypeScript, hooks, componentes separados e estados de loading, erro e vazio.
-- Interface responsiva com Mantine UI, badges de status, filtro, pesquisa local e paginação usando os dados da API.
+- Interface responsiva com Mantine UI, badges de status, filtro, busca global e paginação usando os dados da API.
 - Testes básicos do frontend cobrindo título, empty state, abertura do modal e validação do botão de criação.
 
 ---
 
 ## Limitações conhecidas
 
-- A pesquisa do frontend é local à página carregada; para buscar em todas as tarefas, seria necessário adicionar busca no backend.
 - Não há autenticação/autorização porque esse fluxo não faz parte do escopo obrigatório do desafio.
 - O banco SQLite usa `synchronize: true`, adequado para teste técnico e desenvolvimento local, mas não recomendado para produção.
 
