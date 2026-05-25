@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
+  Box,
   Container,
   Loader,
   Paper,
@@ -41,12 +42,14 @@ function App() {
   const [error, setError] = useState("");
 
   const selectedStatus = statusFilter === "all" ? undefined : statusFilter;
+  const selectedSearch = searchTerm.trim() || undefined;
   const hasActiveFilters = statusFilter !== "all" || searchTerm.trim() !== "";
 
   const loadTasks = useCallback(
     async (params: {
       nextPage: number;
       nextStatus?: TaskStatus;
+      nextSearch?: string;
       initial?: boolean;
     }) => {
       try {
@@ -60,6 +63,7 @@ function App() {
 
         const response = await getTasks({
           status: params.nextStatus,
+          search: params.nextSearch,
           page: params.nextPage,
           limit: PAGE_SIZE,
         });
@@ -77,29 +81,15 @@ function App() {
     [],
   );
 
-  const filteredTasks = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
-
-    if (!normalizedSearch) {
-      return tasks;
-    }
-
-    return tasks.filter((task) => {
-      const title = task.title.toLowerCase();
-      const description = task.description?.toLowerCase() ?? "";
-
-      return (
-        title.includes(normalizedSearch) ||
-        description.includes(normalizedSearch)
-      );
-    });
-  }, [searchTerm, tasks]);
-
   async function handleCreateTask(payload: CreateTaskPayload) {
     await createTask(payload);
     setPage(1);
 
-    await loadTasks({ nextPage: 1, nextStatus: selectedStatus });
+    await loadTasks({
+      nextPage: 1,
+      nextStatus: selectedStatus,
+      nextSearch: selectedSearch,
+    });
   }
 
   async function handleStatusChange(id: number, status: TaskStatus) {
@@ -113,7 +103,11 @@ function App() {
       );
 
       if (selectedStatus && status !== selectedStatus) {
-        await loadTasks({ nextPage: page, nextStatus: selectedStatus });
+        await loadTasks({
+          nextPage: page,
+          nextStatus: selectedStatus,
+          nextSearch: selectedSearch,
+        });
       }
     } finally {
       setChangingTaskId(null);
@@ -133,10 +127,26 @@ function App() {
 
       setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
       setTotalTasks((currentTotal) => Math.max(currentTotal - 1, 0));
-      await loadTasks({ nextPage, nextStatus: selectedStatus });
+      await loadTasks({
+        nextPage,
+        nextStatus: selectedStatus,
+        nextSearch: selectedSearch,
+      });
     } finally {
       setDeletingTaskId(null);
     }
+  }
+
+  async function handleSearchChange(value: string) {
+    const nextSearch = value.trim() || undefined;
+
+    setSearchTerm(value);
+    setPage(1);
+    await loadTasks({
+      nextPage: 1,
+      nextStatus: selectedStatus,
+      nextSearch,
+    });
   }
 
   async function handleStatusFilterChange(value: string | null) {
@@ -146,12 +156,20 @@ function App() {
 
     setStatusFilter(nextStatusFilter);
     setPage(1);
-    await loadTasks({ nextPage: 1, nextStatus });
+    await loadTasks({
+      nextPage: 1,
+      nextStatus,
+      nextSearch: selectedSearch,
+    });
   }
 
   async function handlePageChange(nextPage: number) {
     setPage(nextPage);
-    await loadTasks({ nextPage, nextStatus: selectedStatus });
+    await loadTasks({
+      nextPage,
+      nextStatus: selectedStatus,
+      nextSearch: selectedSearch,
+    });
   }
 
   useEffect(() => {
@@ -161,7 +179,7 @@ function App() {
   }, [loadTasks]);
 
   return (
-    <main className="app-shell">
+    <Box component="main" className="app-shell">
       <Container size="lg" py={{ base: "xl", md: 48 }}>
         <Stack gap="xl">
           <AppHero />
@@ -170,11 +188,11 @@ function App() {
             searchTerm={searchTerm}
             statusFilter={statusFilter}
             disabled={isInitialLoading || isRefreshing}
-            onSearchChange={setSearchTerm}
+            onSearchChange={(value) => void handleSearchChange(value)}
             onStatusChange={(value) => void handleStatusFilterChange(value)}
           />
 
-          <section className="content-panel">
+          <Box component="section" className="content-panel">
             {error ? (
               <Alert color="red" title="Erro ao carregar">
                 {error}
@@ -195,7 +213,7 @@ function App() {
                 />
 
                 <TaskList
-                  tasks={filteredTasks}
+                  tasks={tasks}
                   changingTaskId={changingTaskId}
                   deletingTaskId={deletingTaskId}
                   hasActiveFilters={hasActiveFilters}
@@ -212,7 +230,7 @@ function App() {
                 />
               </Stack>
             )}
-          </section>
+          </Box>
         </Stack>
       </Container>
 
@@ -221,7 +239,7 @@ function App() {
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleCreateTask}
       />
-    </main>
+    </Box>
   );
 }
 

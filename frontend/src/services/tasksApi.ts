@@ -10,12 +10,14 @@ const API_URL = "http://localhost:3333";
 
 type GetTasksParams = {
   status?: TaskStatus;
+  search?: string;
   page?: number;
   limit?: number;
 };
 
 export async function getTasks({
   status,
+  search,
   page = 1,
   limit = 6,
 }: GetTasksParams = {}): Promise<TasksResponse> {
@@ -26,6 +28,10 @@ export async function getTasks({
 
   if (status) {
     searchParams.set("status", status);
+  }
+
+  if (search?.trim()) {
+    searchParams.set("search", search.trim());
   }
 
   const response = await fetch(`${API_URL}/tasks?${searchParams.toString()}`);

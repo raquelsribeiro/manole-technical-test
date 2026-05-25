@@ -18,14 +18,14 @@ export function TaskPagination({
     <Group className="pagination-controls" justify="center">
       <Tooltip label="Página anterior">
         <ActionIcon
-          variant="default"
-          size="lg"
-          radius="xl"
+          variant="subtle"
+          size="md"
+          color="indigo"
           aria-label="Página anterior"
           disabled={page <= 1 || disabled}
           onClick={() => onPageChange(page - 1)}
         >
-          <IconChevronLeft size={20} />
+          <IconChevronLeft size={22} />
         </ActionIcon>
       </Tooltip>
 
@@ -35,14 +35,14 @@ export function TaskPagination({
 
       <Tooltip label="Próxima página">
         <ActionIcon
-          variant="default"
-          size="lg"
-          radius="xl"
+          variant="subtle"
+          size="md"
+          color="indigo"
           aria-label="Próxima página"
           disabled={page >= totalPages || disabled}
           onClick={() => onPageChange(page + 1)}
         >
-          <IconChevronRight size={20} />
+          <IconChevronRight size={22} />
         </ActionIcon>
       </Tooltip>
     </Group>

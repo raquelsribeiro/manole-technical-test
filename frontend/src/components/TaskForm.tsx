@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Box,
   Button,
   Group,
   Modal,
@@ -59,7 +60,7 @@ export function TaskForm({ opened, onClose, onSubmit }: TaskFormProps) {
       centered
       radius="md"
     >
-      <form onSubmit={handleSubmit}>
+      <Box component="form" onSubmit={handleSubmit}>
         <Stack>
           <TextInput
             label="Título"
@@ -96,7 +97,7 @@ export function TaskForm({ opened, onClose, onSubmit }: TaskFormProps) {
             </Button>
           </Group>
         </Stack>
-      </form>
+      </Box>
     </Modal>
   );
 }

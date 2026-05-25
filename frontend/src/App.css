@@ -94,6 +94,7 @@
 
 .pagination-controls {
   padding: 4px 0 12px;
+  flex-wrap: nowrap;
 }
 
 .delete-confirmation-box {
@@ -127,10 +128,6 @@
 
   .task-actions {
     align-items: stretch;
-    flex-direction: column;
-  }
-
-  .pagination-controls {
     flex-direction: column;
   }
 
