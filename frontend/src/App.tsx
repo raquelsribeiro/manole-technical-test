@@ -1,29 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActionIcon,
   Alert,
-  Badge,
-  Button,
   Container,
-  Group,
   Loader,
   Paper,
-  Select,
   Stack,
   Text,
-  TextInput,
-  Title,
-  Tooltip,
 } from "@mantine/core";
 import {
-  IconChevronLeft,
-  IconChevronRight,
-  IconFilter,
-  IconPlus,
-  IconSearch,
-} from "@tabler/icons-react";
-import { TaskForm, TaskList } from "./components";
-import { taskStatusFilterOptions } from "./constants/taskStatus";
+  AppHero,
+  TaskFilters,
+  TaskForm,
+  TaskList,
+  TaskListHeader,
+  TaskPagination,
+} from "./components";
 import {
   createTask,
   deleteTask,
@@ -173,41 +164,15 @@ function App() {
     <main className="app-shell">
       <Container size="lg" py={{ base: "xl", md: 48 }}>
         <Stack gap="xl">
-          <Paper className="hero-panel" radius="md">
-            <Group justify="space-between" align="flex-end" gap="lg">
-              <Stack gap="xs">
-                <Badge variant="light" color="indigo">
-                  <Group gap={6}>Manole Technical Test</Group>
-                </Badge>
-                <Title className="hero-title">Gerenciador de tarefas</Title>
-                <Text className="hero-subtitle">
-                  Organize, filtre e acompanhe tarefas.
-                </Text>
-              </Stack>
-            </Group>
-          </Paper>
+          <AppHero />
 
-          <Paper className="toolbar" radius="md" withBorder>
-            <Group grow align="flex-end">
-              <TextInput
-                label="Pesquisar"
-                placeholder="Título ou descrição"
-                value={searchTerm}
-                leftSection={<IconSearch size={16} />}
-                onChange={(event) => setSearchTerm(event.currentTarget.value)}
-              />
-
-              <Select
-                label="Status"
-                data={taskStatusFilterOptions}
-                value={statusFilter}
-                allowDeselect={false}
-                leftSection={<IconFilter size={16} />}
-                disabled={isInitialLoading || isRefreshing}
-                onChange={(value) => void handleStatusFilterChange(value)}
-              />
-            </Group>
-          </Paper>
+          <TaskFilters
+            searchTerm={searchTerm}
+            statusFilter={statusFilter}
+            disabled={isInitialLoading || isRefreshing}
+            onSearchChange={setSearchTerm}
+            onStatusChange={(value) => void handleStatusFilterChange(value)}
+          />
 
           <section className="content-panel">
             {error ? (
@@ -223,30 +188,11 @@ function App() {
               </Paper>
             ) : (
               <Stack gap="lg">
-                <Group justify="space-between" align="center" gap="md">
-                  <Stack gap={2}>
-                    <Text fw={600}>
-                      {totalTasks} {totalTasks === 1 ? "tarefa" : "tarefas"}
-                    </Text>
-                    {isRefreshing && (
-                      <Group gap={6}>
-                        <Loader size="xs" color="indigo" />
-                        <Text size="sm" c="dimmed">
-                          Atualizando...
-                        </Text>
-                      </Group>
-                    )}
-                  </Stack>
-
-                  <Button
-                    className="primary-action"
-                    size="md"
-                    leftSection={<IconPlus size={18} />}
-                    onClick={() => setIsFormOpen(true)}
-                  >
-                    Criar tarefa
-                  </Button>
-                </Group>
+                <TaskListHeader
+                  totalTasks={totalTasks}
+                  isRefreshing={isRefreshing}
+                  onCreateTask={() => setIsFormOpen(true)}
+                />
 
                 <TaskList
                   tasks={filteredTasks}
@@ -258,37 +204,12 @@ function App() {
                   onDelete={handleDeleteTask}
                 />
 
-                <Group className="pagination-controls" justify="center">
-                  <Tooltip label="Página anterior">
-                    <ActionIcon
-                      variant="default"
-                      size="lg"
-                      radius="xl"
-                      aria-label="Página anterior"
-                      disabled={page <= 1 || isRefreshing}
-                      onClick={() => void handlePageChange(page - 1)}
-                    >
-                      <IconChevronLeft size={20} />
-                    </ActionIcon>
-                  </Tooltip>
-
-                  <Text size="sm" fw={600}>
-                    Página {page} de {totalPages}
-                  </Text>
-
-                  <Tooltip label="Próxima página">
-                    <ActionIcon
-                      variant="default"
-                      size="lg"
-                      radius="xl"
-                      aria-label="Próxima página"
-                      disabled={page >= totalPages || isRefreshing}
-                      onClick={() => void handlePageChange(page + 1)}
-                    >
-                      <IconChevronRight size={20} />
-                    </ActionIcon>
-                  </Tooltip>
-                </Group>
+                <TaskPagination
+                  page={page}
+                  totalPages={totalPages}
+                  disabled={isRefreshing}
+                  onPageChange={(nextPage) => void handlePageChange(nextPage)}
+                />
               </Stack>
             )}
           </section>
