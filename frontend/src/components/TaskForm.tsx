@@ -56,7 +56,7 @@ export function TaskForm({ onSubmit }: TaskFormProps) {
         <option value="concluída">Concluída</option>
       </select>
 
-      <button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting || !title.trim()}>
         {isSubmitting ? "Criando..." : "Criar tarefa"}
       </button>
     </form>
