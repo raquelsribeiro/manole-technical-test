@@ -33,13 +33,13 @@ describe("App", () => {
     );
   });
 
-  it("renderiza o título da aplicação", async () => {
+  it("should render the application title", async () => {
     renderApp();
 
     expect(await screen.findByText("Gerenciador de tarefas")).toBeInTheDocument();
   });
 
-  it("renderiza o empty state", async () => {
+  it("should render the empty state", async () => {
     renderApp();
 
     expect(
@@ -47,7 +47,7 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
-  it("abre o modal de criação", async () => {
+  it("should open the create task modal", async () => {
     const user = userEvent.setup();
     renderApp();
 
@@ -60,7 +60,7 @@ describe("App", () => {
     expect(screen.getByText("Nova tarefa")).toBeInTheDocument();
   });
 
-  it("mantém o botão de criação desabilitado quando o título está vazio", async () => {
+  it("should keep the create button disabled when title is empty", async () => {
     const user = userEvent.setup();
     renderApp();
 

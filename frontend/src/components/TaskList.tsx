@@ -1,5 +1,5 @@
 import { Button, Paper, SimpleGrid, Stack, Text, Title } from "@mantine/core";
-import { IconPlus, IconSearchOff } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import { TaskItem } from "./TaskItem";
 import type { Task, TaskStatus } from "../types/task";
 
