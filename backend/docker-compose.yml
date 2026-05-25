@@ -1,0 +1,10 @@
+services:
+  backend:
+    build: .
+    container_name: manole-backend
+    ports:
+      - "3333:3333"
+    volumes:
+      - ./database.sqlite:/app/database.sqlite
+    environment:
+      - PORT=3333
