@@ -341,6 +341,7 @@ Algumas melhorias que poderiam ser implementadas futuramente:
 - utilização de React Query;
 - melhorias de acessibilidade;
 - ordenação por data ou status;
+- seleção múltipla de tarefas e exclusão em massa;
 
 ---
 
