@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -26,6 +26,7 @@ import type { CreateTaskPayload, Task, TaskStatus } from "./types/task";
 import "./App.css";
 
 const PAGE_SIZE = 6;
+const SEARCH_DEBOUNCE_MS = 550;
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -40,6 +41,7 @@ function App() {
   const [changingTaskId, setChangingTaskId] = useState<number | null>(null);
   const [deletingTaskId, setDeletingTaskId] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedStatus = statusFilter === "all" ? undefined : statusFilter;
   const selectedSearch = searchTerm.trim() || undefined;
@@ -80,6 +82,13 @@ function App() {
     },
     [],
   );
+
+  const clearSearchDebounce = useCallback(() => {
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+      searchDebounceRef.current = null;
+    }
+  }, []);
 
   async function handleCreateTask(payload: CreateTaskPayload) {
     await createTask(payload);
@@ -137,19 +146,25 @@ function App() {
     }
   }
 
-  async function handleSearchChange(value: string) {
+  function handleSearchChange(value: string) {
     const nextSearch = value.trim() || undefined;
 
     setSearchTerm(value);
     setPage(1);
-    await loadTasks({
-      nextPage: 1,
-      nextStatus: selectedStatus,
-      nextSearch,
-    });
+    clearSearchDebounce();
+
+    searchDebounceRef.current = setTimeout(() => {
+      void loadTasks({
+        nextPage: 1,
+        nextStatus: selectedStatus,
+        nextSearch,
+      });
+    }, SEARCH_DEBOUNCE_MS);
   }
 
   async function handleStatusFilterChange(value: string | null) {
+    clearSearchDebounce();
+
     const nextStatusFilter = (value as TaskStatus | "all" | null) ?? "all";
     const nextStatus =
       nextStatusFilter === "all" ? undefined : nextStatusFilter;
@@ -178,6 +193,10 @@ function App() {
     );
   }, [loadTasks]);
 
+  useEffect(() => {
+    return () => clearSearchDebounce();
+  }, [clearSearchDebounce]);
+
   return (
     <Box component="main" className="app-shell">
       <Container size="lg" py={{ base: "xl", md: 48 }}>
@@ -188,7 +207,7 @@ function App() {
             searchTerm={searchTerm}
             statusFilter={statusFilter}
             disabled={isInitialLoading || isRefreshing}
-            onSearchChange={(value) => void handleSearchChange(value)}
+            onSearchChange={handleSearchChange}
             onStatusChange={(value) => void handleStatusFilterChange(value)}
           />
 
