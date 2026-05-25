@@ -81,4 +81,56 @@ describe("Tasks", () => {
 
     expect(tasksResponse.body.data).toHaveLength(0);
   });
+
+  it("should return 400 when status is invalid", async () => {
+    const response = await request(app).post("/tasks").send({
+      title: "Status inválido",
+      description: "Teste de validação",
+      status: "finalizado",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "Invalid status",
+    });
+  });
+
+  it("should return 404 when task does not exist", async () => {
+    const response = await request(app).get("/tasks/99999");
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      message: "Task not found",
+    });
+  });
+
+  it("should return 400 when title is missing", async () => {
+    const response = await request(app).post("/tasks").send({
+      description: "Tarefa sem título",
+      status: "pendente",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "Title is required",
+    });
+  });
+
+  it("should filter tasks by status", async () => {
+    await request(app).post("/tasks").send({
+      title: "Tarefa pendente",
+      status: "pendente",
+    });
+
+    await request(app).post("/tasks").send({
+      title: "Tarefa concluída",
+      status: "concluída",
+    });
+
+    const response = await request(app).get("/tasks?status=concluída");
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveLength(1);
+    expect(response.body.data[0].status).toBe("concluída");
+  });
 });
