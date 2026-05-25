@@ -1,12 +1,10 @@
 import { useState } from "react";
 import {
-  Badge,
   Button,
   Card,
   Group,
   Modal,
   Paper,
-  Select,
   Stack,
   Text,
   ThemeIcon,
@@ -17,6 +15,8 @@ import {
   IconCalendar,
   IconTrash,
 } from "@tabler/icons-react";
+import { TaskStatusBadge } from "./TaskStatusBadge";
+import { TaskStatusSelect } from "./TaskStatusSelect";
 import type { Task, TaskStatus } from "../types/task";
 
 type TaskItemProps = {
@@ -26,24 +26,6 @@ type TaskItemProps = {
   onStatusChange: (id: number, status: TaskStatus) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
 };
-
-const statusLabels: Record<TaskStatus, string> = {
-  pendente: "Pendente",
-  "em andamento": "Em andamento",
-  concluída: "Concluída",
-};
-
-const statusColors: Record<TaskStatus, string> = {
-  pendente: "yellow",
-  "em andamento": "indigo",
-  concluída: "green",
-};
-
-const statusOptions = [
-  { value: "pendente", label: "Pendente" },
-  { value: "em andamento", label: "Em andamento" },
-  { value: "concluída", label: "Concluída" },
-];
 
 export function TaskItem({
   task,
@@ -68,9 +50,7 @@ export function TaskItem({
             <Title order={3} className="task-title">
               {task.title}
             </Title>
-            <Badge color={statusColors[task.status]} variant="light">
-              {statusLabels[task.status]}
-            </Badge>
+            <TaskStatusBadge status={task.status} />
           </Group>
 
           <Text c="dimmed" size="sm" className="task-description">
@@ -85,16 +65,11 @@ export function TaskItem({
           </Group>
 
           <Group className="task-actions" mt="auto" align="flex-end">
-            <Select
-              label="Status"
-              data={statusOptions}
+            <TaskStatusSelect
               value={task.status}
-              allowDeselect={false}
               disabled={isBusy}
-              onChange={(value) =>
-                value && onStatusChange(task.id, value as TaskStatus)
-              }
               className="status-select"
+              onChange={(status) => onStatusChange(task.id, status)}
             />
 
             {isChangingStatus && (

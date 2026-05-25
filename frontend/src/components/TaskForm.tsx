@@ -3,11 +3,11 @@ import {
   Button,
   Group,
   Modal,
-  Select,
   Stack,
   TextInput,
   Textarea,
 } from "@mantine/core";
+import { TaskStatusSelect } from "./TaskStatusSelect";
 import type { CreateTaskPayload, TaskStatus } from "../types/task";
 
 type TaskFormProps = {
@@ -15,12 +15,6 @@ type TaskFormProps = {
   onClose: () => void;
   onSubmit: (payload: CreateTaskPayload) => Promise<void>;
 };
-
-const statusOptions = [
-  { value: "pendente", label: "Pendente" },
-  { value: "em andamento", label: "Em andamento" },
-  { value: "concluída", label: "Concluída" },
-];
 
 export function TaskForm({ opened, onClose, onSubmit }: TaskFormProps) {
   const [title, setTitle] = useState("");
@@ -83,12 +77,9 @@ export function TaskForm({ opened, onClose, onSubmit }: TaskFormProps) {
             onChange={(event) => setDescription(event.currentTarget.value)}
           />
 
-          <Select
-            label="Status"
-            data={statusOptions}
+          <TaskStatusSelect
             value={status}
-            allowDeselect={false}
-            onChange={(value) => setStatus(value as TaskStatus)}
+            onChange={setStatus}
           />
 
           <Group justify="flex-end" mt="xs">

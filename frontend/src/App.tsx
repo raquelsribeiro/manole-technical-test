@@ -22,8 +22,8 @@ import {
   IconPlus,
   IconSearch,
 } from "@tabler/icons-react";
-import { TaskForm } from "./components/TaskForm";
-import { TaskList } from "./components/TaskList";
+import { TaskForm, TaskList } from "./components";
+import { taskStatusFilterOptions } from "./constants/taskStatus";
 import {
   createTask,
   deleteTask,
@@ -32,13 +32,6 @@ import {
 } from "./services/tasksApi";
 import type { CreateTaskPayload, Task, TaskStatus } from "./types/task";
 import "./App.css";
-
-const statusFilterOptions = [
-  { value: "all", label: "Todos os status" },
-  { value: "pendente", label: "Pendente" },
-  { value: "em andamento", label: "Em andamento" },
-  { value: "concluída", label: "Concluída" },
-];
 
 const PAGE_SIZE = 6;
 
@@ -206,7 +199,7 @@ function App() {
 
               <Select
                 label="Status"
-                data={statusFilterOptions}
+                data={taskStatusFilterOptions}
                 value={statusFilter}
                 allowDeselect={false}
                 leftSection={<IconFilter size={16} />}
