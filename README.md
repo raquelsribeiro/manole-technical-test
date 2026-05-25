@@ -341,7 +341,7 @@ Algumas melhorias que poderiam ser implementadas futuramente:
 - utilização de React Query;
 - melhorias de acessibilidade;
 - ordenação por data ou status;
-- teste mais amplo no FrontEnd
+- ampliar a cobertura de testes no frontend;
 
 ---
 
