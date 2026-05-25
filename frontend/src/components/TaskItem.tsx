@@ -6,11 +6,29 @@ type TaskItemProps = {
   onDelete: (id: number) => Promise<void>;
 };
 
+const statusLabels: Record<TaskStatus, string> = {
+  pendente: "Pendente",
+  "em andamento": "Em andamento",
+  concluída: "Concluída",
+};
+
+const statusClassNames: Record<TaskStatus, string> = {
+  pendente: "status-badge status-pending",
+  "em andamento": "status-badge status-progress",
+  concluída: "status-badge status-completed",
+};
+
 export function TaskItem({ task, onStatusChange, onDelete }: TaskItemProps) {
   return (
     <li className="task-item">
-      <div>
-        <h3>{task.title}</h3>
+      <div className="task-content">
+        <div className="task-title-row">
+          <h3>{task.title}</h3>
+
+          <span className={statusClassNames[task.status]}>
+            {statusLabels[task.status]}
+          </span>
+        </div>
 
         {task.description && <p>{task.description}</p>}
 

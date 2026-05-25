@@ -61,7 +61,12 @@ function App() {
 
       <TaskForm onSubmit={handleCreateTask} />
 
-      {isLoading && <p>Carregando tarefas...</p>}
+      {isLoading && (
+        <div className="loading-state">
+          <div className="spinner" />
+          <p>Carregando tarefas...</p>
+        </div>
+      )}
 
       {error && <p className="error-message">{error}</p>}
 
