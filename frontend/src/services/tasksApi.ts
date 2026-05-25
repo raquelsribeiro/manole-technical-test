@@ -6,7 +6,7 @@ import type {
   UpdateTaskPayload,
 } from "../types/task";
 
-const API_URL = "http://localhost:3333";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3333";
 
 type GetTasksParams = {
   status?: TaskStatus;

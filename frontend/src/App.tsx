@@ -30,8 +30,11 @@ import {
 import type { CreateTaskPayload, Task, TaskStatus } from "./types/task";
 import "./App.css";
 
-const PAGE_SIZE = 6;
-const SEARCH_DEBOUNCE_MS = 550;
+const PAGE_SIZE = parseInt(import.meta.env.VITE_PAGE_SIZE || "6", 10);
+const SEARCH_DEBOUNCE_MS = parseInt(
+  import.meta.env.VITE_SEARCH_DEBOUNCE_MS || "550",
+  10
+);
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
