@@ -35,14 +35,47 @@ export class TaskController {
     return response.status(201).json(task);
   }
 
-  static async list(_request: Request, response: Response) {
-    const tasks = await taskRepository.find({
+  static async list(request: Request, response: Response) {
+    const { status, page = "1", limit = "10" } = request.query;
+
+    if (status !== undefined && !isValidStatus(status)) {
+      return response.status(400).json({
+        message: "Invalid status",
+      });
+    }
+
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    if (
+      Number.isNaN(pageNumber) ||
+      Number.isNaN(limitNumber) ||
+      pageNumber < 1 ||
+      limitNumber < 1
+    ) {
+      return response.status(400).json({
+        message: "Page and limit must be positive numbers",
+      });
+    }
+
+    const [tasks, total] = await taskRepository.findAndCount({
+      where: status ? { status: status as TaskStatus } : {},
       order: {
         createdAt: "DESC",
       },
+      skip: (pageNumber - 1) * limitNumber,
+      take: limitNumber,
     });
 
-    return response.status(200).json(tasks);
+    return response.status(200).json({
+      data: tasks,
+      pagination: {
+        page: pageNumber,
+        limit: limitNumber,
+        total,
+        totalPages: Math.ceil(total / limitNumber),
+      },
+    });
   }
 
   static async findById(request: Request, response: Response) {
