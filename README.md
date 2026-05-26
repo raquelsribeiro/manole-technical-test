@@ -89,8 +89,7 @@ A aplicação foi construída utilizando React no frontend e Node.js com Express
 │   │   ├── routes
 │   │   ├── tests
 │   │   └── app.ts
-│   ├── Dockerfile
-│   └── docker-compose.yml
+│   └── Dockerfile
 │
 ├── frontend
 │   ├── src
@@ -98,24 +97,57 @@ A aplicação foi construída utilizando React no frontend e Node.js com Express
 │   │   ├── services
 │   │   ├── types
 │   │   └── App.tsx
+│   ├── Dockerfile
+│   ├── nginx.conf
 │   └── vite.config.ts
 │
+├── docker-compose.yml
 └── challenges
     └── logic
 ```
 
 ---
 
-## Como rodar o backend
+## Como rodar com Docker
 
-### Instalar dependências
+Use este caminho para subir backend e frontend juntos a partir da raiz do projeto:
+
+```bash
+docker compose up --build
+```
+
+Aplicação disponível em:
+
+```txt
+http://localhost
+```
+
+API disponível diretamente em:
+
+```txt
+http://localhost:3333
+```
+
+API disponível pelo proxy do frontend em:
+
+```txt
+http://localhost/api
+```
+
+---
+
+## Como rodar individualmente
+
+### Backend
+
+Instalar dependências:
 
 ```bash
 cd backend
 npm install
 ```
 
-### Rodar em desenvolvimento
+Rodar em desenvolvimento:
 
 ```bash
 npm run dev
@@ -129,16 +161,16 @@ http://localhost:3333
 
 ---
 
-## Como rodar o frontend
+### Frontend
 
-### Instalar dependências
+Instalar dependências:
 
 ```bash
 cd frontend
 npm install
 ```
 
-### Rodar em desenvolvimento
+Rodar em desenvolvimento:
 
 ```bash
 npm run dev
@@ -148,21 +180,6 @@ Frontend disponível em:
 
 ```txt
 http://localhost:5173
-```
-
----
-
-## Como rodar com Docker
-
-```bash
-cd backend
-docker compose up --build
-```
-
-API disponível em:
-
-```txt
-http://localhost:3333
 ```
 
 ---

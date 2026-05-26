@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: manole-backend
+    ports:
+      - "3333:3333"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=3333
+      - DATABASE_PATH=./data/tasks.sqlite
+      - CORS_ORIGIN=http://localhost,http://localhost:80
+    networks:
+      - manole-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=/api
+    container_name: manole-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - manole-network
+
+networks:
+  manole-network:
+    driver: bridge
