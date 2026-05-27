@@ -1,4 +1,5 @@
 export { AppHero } from "./AppHero";
+export { BulkDeleteConfirmationModal } from "./BulkDeleteConfirmationModal";
 export { TaskForm } from "./TaskForm";
 export { TaskItem } from "./TaskItem";
 export { TaskFilters } from "./TaskFilters";
