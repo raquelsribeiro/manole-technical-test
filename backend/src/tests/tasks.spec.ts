@@ -116,6 +116,75 @@ describe("Tasks", () => {
     });
   });
 
+  it("should return 400 when title is blank", async () => {
+    const response = await request(app).post("/tasks").send({
+      title: "   ",
+      description: "Tarefa com título vazio",
+      status: "pendente",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "Title is required",
+    });
+  });
+
+  it("should return 400 when description is not a string", async () => {
+    const response = await request(app).post("/tasks").send({
+      title: "Descrição inválida",
+      description: 123,
+      status: "pendente",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "Description must be a string",
+    });
+  });
+
+  it("should return 400 when task id is invalid", async () => {
+    const response = await request(app).get("/tasks/abc");
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "Task id must be a positive integer",
+    });
+  });
+
+  it("should return 400 when page or limit are invalid", async () => {
+    const response = await request(app).get("/tasks?page=1.5&limit=10");
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "Page and limit must be positive integers",
+    });
+  });
+
+  it("should return 400 when limit is greater than the maximum", async () => {
+    const response = await request(app).get("/tasks?limit=101");
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "Limit must be less than or equal to 100",
+    });
+  });
+
+  it("should return 400 when update payload is empty", async () => {
+    const createdTask = await request(app).post("/tasks").send({
+      title: "Atualização vazia",
+      status: "pendente",
+    });
+
+    const response = await request(app)
+      .put(`/tasks/${createdTask.body.id}`)
+      .send({});
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      message: "At least one field must be provided",
+    });
+  });
+
   it("should filter tasks by status", async () => {
     await request(app).post("/tasks").send({
       title: "Tarefa pendente",

@@ -1,167 +1,97 @@
 import { Request, Response } from "express";
-import { AppDataSource } from "../config/data-source";
-import { Task, TaskStatus } from "../entities/Task";
-
-const taskRepository = AppDataSource.getRepository(Task);
-
-const isValidStatus = (status: unknown): status is TaskStatus => {
-  return Object.values(TaskStatus).includes(status as TaskStatus);
-};
+import {
+  parseCreateTaskDTO,
+  parseListTasksDTO,
+  parseTaskId,
+  parseUpdateTaskDTO,
+  ValidationError,
+} from "../dtos/task.dto";
+import { TaskService } from "../services/TaskService";
 
 export class TaskController {
-  static async create(request: Request, response: Response) {
-    const { title, description, status } = request.body;
+  constructor(private readonly taskService: TaskService) {}
 
-    if (!title || typeof title !== "string") {
+  create = async (request: Request, response: Response) => {
+    try {
+      const data = parseCreateTaskDTO(request.body);
+      const task = await this.taskService.create(data);
+
+      return response.status(201).json(task);
+    } catch (error) {
+      return this.handleError(error, response);
+    }
+  };
+
+  list = async (request: Request, response: Response) => {
+    try {
+      const query = parseListTasksDTO(request.query);
+      const tasks = await this.taskService.list(query);
+
+      return response.status(200).json(tasks);
+    } catch (error) {
+      return this.handleError(error, response);
+    }
+  };
+
+  findById = async (request: Request, response: Response) => {
+    try {
+      const id = parseTaskId(request.params.id);
+      const task = await this.taskService.findById(id);
+
+      if (!task) {
+        return response.status(404).json({
+          message: "Task not found",
+        });
+      }
+
+      return response.status(200).json(task);
+    } catch (error) {
+      return this.handleError(error, response);
+    }
+  };
+
+  update = async (request: Request, response: Response) => {
+    try {
+      const id = parseTaskId(request.params.id);
+      const data = parseUpdateTaskDTO(request.body);
+      const task = await this.taskService.update(id, data);
+
+      if (!task) {
+        return response.status(404).json({
+          message: "Task not found",
+        });
+      }
+
+      return response.status(200).json(task);
+    } catch (error) {
+      return this.handleError(error, response);
+    }
+  };
+
+  delete = async (request: Request, response: Response) => {
+    try {
+      const id = parseTaskId(request.params.id);
+      const wasDeleted = await this.taskService.delete(id);
+
+      if (!wasDeleted) {
+        return response.status(404).json({
+          message: "Task not found",
+        });
+      }
+
+      return response.status(204).send();
+    } catch (error) {
+      return this.handleError(error, response);
+    }
+  };
+
+  private handleError(error: unknown, response: Response) {
+    if (error instanceof ValidationError) {
       return response.status(400).json({
-        message: "Title is required",
+        message: error.message,
       });
     }
 
-    if (status && !isValidStatus(status)) {
-      return response.status(400).json({
-        message: "Invalid status",
-      });
-    }
-
-    const task = taskRepository.create({
-      title,
-      description,
-      status: status ?? TaskStatus.PENDING,
-    });
-
-    await taskRepository.save(task);
-
-    return response.status(201).json(task);
-  }
-
-  static async list(request: Request, response: Response) {
-    const { status, search, page = "1", limit = "10" } = request.query;
-
-    if (status !== undefined && !isValidStatus(status)) {
-      return response.status(400).json({
-        message: "Invalid status",
-      });
-    }
-
-    if (search !== undefined && typeof search !== "string") {
-      return response.status(400).json({
-        message: "Search must be a string",
-      });
-    }
-
-    const pageNumber = Number(page);
-    const limitNumber = Number(limit);
-
-    if (
-      Number.isNaN(pageNumber) ||
-      Number.isNaN(limitNumber) ||
-      pageNumber < 1 ||
-      limitNumber < 1
-    ) {
-      return response.status(400).json({
-        message: "Page and limit must be positive numbers",
-      });
-    }
-
-    const queryBuilder = taskRepository
-      .createQueryBuilder("task")
-      .orderBy("task.createdAt", "DESC")
-      .skip((pageNumber - 1) * limitNumber)
-      .take(limitNumber);
-
-    if (status) {
-      queryBuilder.andWhere("task.status = :status", { status });
-    }
-
-    if (search?.trim()) {
-      queryBuilder.andWhere(
-        "(LOWER(task.title) LIKE :search OR LOWER(task.description) LIKE :search)",
-        { search: `%${search.trim().toLowerCase()}%` },
-      );
-    }
-
-    const [tasks, total] = await queryBuilder.getManyAndCount();
-
-    return response.status(200).json({
-      data: tasks,
-      pagination: {
-        page: pageNumber,
-        limit: limitNumber,
-        total,
-        totalPages: Math.ceil(total / limitNumber),
-      },
-    });
-  }
-
-  static async findById(request: Request, response: Response) {
-    const { id } = request.params;
-
-    const task = await taskRepository.findOneBy({
-      id: Number(id),
-    });
-
-    if (!task) {
-      return response.status(404).json({
-        message: "Task not found",
-      });
-    }
-
-    return response.status(200).json(task);
-  }
-
-  static async update(request: Request, response: Response) {
-    const { id } = request.params;
-    const { title, description, status } = request.body;
-
-    const task = await taskRepository.findOneBy({
-      id: Number(id),
-    });
-
-    if (!task) {
-      return response.status(404).json({
-        message: "Task not found",
-      });
-    }
-
-    if (title !== undefined && typeof title !== "string") {
-      return response.status(400).json({
-        message: "Title must be a string",
-      });
-    }
-
-    if (status !== undefined && !isValidStatus(status)) {
-      return response.status(400).json({
-        message: "Invalid status",
-      });
-    }
-
-    taskRepository.merge(task, {
-      title,
-      description,
-      status,
-    });
-
-    const updatedTask = await taskRepository.save(task);
-
-    return response.status(200).json(updatedTask);
-  }
-
-  static async delete(request: Request, response: Response) {
-    const { id } = request.params;
-
-    const task = await taskRepository.findOneBy({
-      id: Number(id),
-    });
-
-    if (!task) {
-      return response.status(404).json({
-        message: "Task not found",
-      });
-    }
-
-    await taskRepository.remove(task);
-
-    return response.status(204).send();
+    throw error;
   }
 }
