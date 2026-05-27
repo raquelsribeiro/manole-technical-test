@@ -16,9 +16,17 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+const healthResponse = {
+  status: "healthy",
+};
+
+app.get("/", (_, response) => {
+  return response.status(200).json(healthResponse);
+});
+
 app.get("/health", (_, response) => {
   return response.status(200).json({
-    status: "healthy",
+    ...healthResponse,
   });
 });
 

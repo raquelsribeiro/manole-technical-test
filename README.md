@@ -122,17 +122,19 @@ Aplicação disponível em:
 http://localhost
 ```
 
-API disponível diretamente em:
+URL base da API disponível diretamente em:
 
 ```txt
 http://localhost:3333
 ```
 
-API disponível pelo proxy do frontend em:
+URL base da API disponível pelo proxy do frontend em:
 
 ```txt
 http://localhost/api
 ```
+
+Observação: a raiz da API (`http://localhost:3333/`) aponta para o healthcheck e retorna o status da aplicação.
 
 ---
 
@@ -153,11 +155,13 @@ Rodar em desenvolvimento:
 npm run dev
 ```
 
-Servidor disponível em:
+URL base do backend disponível em:
 
 ```txt
 http://localhost:3333
 ```
+
+Observação: a rota raiz (`/`) aponta para o healthcheck. Para listar tarefas, acesse `http://localhost:3333/tasks`.
 
 ---
 
@@ -211,10 +215,18 @@ npm test
 
 ## Endpoints da API
 
+Os exemplos abaixo usam a URL direta do backend (`http://localhost:3333`). Quando a aplicação estiver rodando pelo Docker, os mesmos endpoints também podem ser acessados pelo proxy do frontend trocando a base por `http://localhost/api`.
+
 ### Healthcheck
 
 ```http
 GET /health
+```
+
+Exemplo:
+
+```txt
+http://localhost:3333/health
 ```
 
 ---
@@ -225,10 +237,22 @@ GET /health
 GET /tasks
 ```
 
+Exemplo:
+
+```txt
+http://localhost:3333/tasks
+```
+
 ### Filtro por status
 
 ```http
 GET /tasks?status=pendente
+```
+
+Exemplo:
+
+```txt
+http://localhost:3333/tasks?status=pendente
 ```
 
 ### Paginação
@@ -243,6 +267,12 @@ GET /tasks?page=1&limit=10
 GET /tasks?search=typeorm
 ```
 
+Exemplo:
+
+```txt
+http://localhost:3333/tasks?search=typeorm
+```
+
 ### Combinando busca, filtro e paginação
 
 ```http
@@ -255,6 +285,12 @@ GET /tasks?search=api&status=pendente&page=1&limit=6
 
 ```http
 GET /tasks/:id
+```
+
+Exemplo para buscar a tarefa de id `1`:
+
+```txt
+http://localhost:3333/tasks/1
 ```
 
 ---
