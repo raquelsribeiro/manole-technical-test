@@ -1,4 +1,10 @@
-export type TaskStatus = "pendente" | "em andamento" | "concluída";
+export const TaskStatus = {
+  PENDING: "pendente",
+  IN_PROGRESS: "em andamento",
+  COMPLETED: "concluída",
+} as const;
+
+export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
 
 export type Task = {
   id: number;

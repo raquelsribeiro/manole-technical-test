@@ -1,9 +1,9 @@
-import type { TaskStatus } from "../types/task";
+import { TaskStatus } from "../types/task";
 
 export const taskStatusOptions: { value: TaskStatus; label: string }[] = [
-  { value: "pendente", label: "Pendente" },
-  { value: "em andamento", label: "Em andamento" },
-  { value: "concluída", label: "Concluída" },
+  { value: TaskStatus.PENDING, label: "Pendente" },
+  { value: TaskStatus.IN_PROGRESS, label: "Em andamento" },
+  { value: TaskStatus.COMPLETED, label: "Concluída" },
 ];
 
 export const taskStatusFilterOptions = [
@@ -12,13 +12,13 @@ export const taskStatusFilterOptions = [
 ];
 
 export const taskStatusLabels: Record<TaskStatus, string> = {
-  pendente: "Pendente",
-  "em andamento": "Em andamento",
-  concluída: "Concluída",
+  [TaskStatus.PENDING]: "Pendente",
+  [TaskStatus.IN_PROGRESS]: "Em andamento",
+  [TaskStatus.COMPLETED]: "Concluída",
 };
 
 export const taskStatusColors: Record<TaskStatus, string> = {
-  pendente: "yellow",
-  "em andamento": "indigo",
-  concluída: "green",
+  [TaskStatus.PENDING]: "yellow",
+  [TaskStatus.IN_PROGRESS]: "indigo",
+  [TaskStatus.COMPLETED]: "green",
 };

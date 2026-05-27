@@ -9,7 +9,7 @@ import {
   Textarea,
 } from "@mantine/core";
 import { TaskStatusSelect } from "./TaskStatusSelect";
-import type { CreateTaskPayload, TaskStatus } from "../types/task";
+import { TaskStatus, type CreateTaskPayload } from "../types/task";
 
 type TaskFormProps = {
   opened: boolean;
@@ -20,13 +20,13 @@ type TaskFormProps = {
 export const TaskForm = ({ opened, onClose, onSubmit }: TaskFormProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState<TaskStatus>("pendente");
+  const [status, setStatus] = useState<TaskStatus>(TaskStatus.PENDING);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const resetForm = () => {
     setTitle("");
     setDescription("");
-    setStatus("pendente");
+    setStatus(TaskStatus.PENDING);
   };
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
