@@ -1,6 +1,6 @@
 import { Badge, Group, Paper, Stack, Text, Title } from "@mantine/core";
 
-export function AppHero() {
+export const AppHero = () => {
   return (
     <Paper className="hero-panel" radius="md">
       <Group justify="space-between" align="flex-end" gap="lg">
@@ -16,4 +16,4 @@ export function AppHero() {
       </Group>
     </Paper>
   );
-}
+};

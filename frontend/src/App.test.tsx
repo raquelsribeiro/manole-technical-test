@@ -14,13 +14,13 @@ const emptyTasksResponse = {
   },
 };
 
-function renderApp() {
+const renderApp = () => {
   return render(
     <MantineProvider>
       <App />
     </MantineProvider>,
   );
-}
+};
 
 describe("App", () => {
   beforeEach(() => {

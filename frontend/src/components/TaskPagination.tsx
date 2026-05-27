@@ -8,12 +8,12 @@ type TaskPaginationProps = {
   onPageChange: (page: number) => void;
 };
 
-export function TaskPagination({
+export const TaskPagination = ({
   page,
   totalPages,
   disabled = false,
   onPageChange,
-}: TaskPaginationProps) {
+}: TaskPaginationProps) => {
   return (
     <Group className="pagination-controls" justify="center">
       <Tooltip label="Página anterior">
@@ -47,4 +47,4 @@ export function TaskPagination({
       </Tooltip>
     </Group>
   );
-}
+};

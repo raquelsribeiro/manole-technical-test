@@ -11,13 +11,13 @@ type TaskFiltersProps = {
   onStatusChange: (status: string | null) => void;
 };
 
-export function TaskFilters({
+export const TaskFilters = ({
   searchTerm,
   statusFilter,
   disabled = false,
   onSearchChange,
   onStatusChange,
-}: TaskFiltersProps) {
+}: TaskFiltersProps) => {
   return (
     <Paper className="toolbar" radius="md" withBorder>
       <Group grow align="flex-end">
@@ -41,4 +41,4 @@ export function TaskFilters({
       </Group>
     </Paper>
   );
-}
+};

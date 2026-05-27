@@ -10,13 +10,13 @@ type TaskStatusSelectProps = {
   onChange: (status: TaskStatus) => void;
 };
 
-export function TaskStatusSelect({
+export const TaskStatusSelect = ({
   label = "Status",
   value,
   disabled = false,
   className,
   onChange,
-}: TaskStatusSelectProps) {
+}: TaskStatusSelectProps) => {
   return (
     <Select
       label={label}
@@ -30,4 +30,4 @@ export function TaskStatusSelect({
       }
     />
   );
-}
+};

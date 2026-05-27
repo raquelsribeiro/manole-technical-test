@@ -15,12 +15,12 @@ type GetTasksParams = {
   limit?: number;
 };
 
-export async function getTasks({
+export const getTasks = async ({
   status,
   search,
   page = 1,
   limit = 6,
-}: GetTasksParams = {}): Promise<TasksResponse> {
+}: GetTasksParams = {}): Promise<TasksResponse> => {
   const searchParams = new URLSearchParams({
     page: String(page),
     limit: String(limit),
@@ -41,9 +41,11 @@ export async function getTasks({
   }
 
   return response.json();
-}
+};
 
-export async function createTask(payload: CreateTaskPayload): Promise<Task> {
+export const createTask = async (
+  payload: CreateTaskPayload,
+): Promise<Task> => {
   const response = await fetch(`${API_URL}/tasks`, {
     method: "POST",
     headers: {
@@ -57,12 +59,12 @@ export async function createTask(payload: CreateTaskPayload): Promise<Task> {
   }
 
   return response.json();
-}
+};
 
-export async function updateTask(
+export const updateTask = async (
   id: number,
   payload: UpdateTaskPayload,
-): Promise<Task> {
+): Promise<Task> => {
   const response = await fetch(`${API_URL}/tasks/${id}`, {
     method: "PUT",
     headers: {
@@ -76,9 +78,9 @@ export async function updateTask(
   }
 
   return response.json();
-}
+};
 
-export async function deleteTask(id: number): Promise<void> {
+export const deleteTask = async (id: number): Promise<void> => {
   const response = await fetch(`${API_URL}/tasks/${id}`, {
     method: "DELETE",
   });
@@ -86,4 +88,4 @@ export async function deleteTask(id: number): Promise<void> {
   if (!response.ok) {
     throw new Error("Erro ao excluir tarefa");
   }
-}
+};

@@ -15,7 +15,7 @@ type TaskListProps = {
   onDelete: (id: number) => Promise<void>;
 };
 
-export function TaskList({
+export const TaskList = ({
   tasks,
   selectedTaskIds,
   changingTaskId,
@@ -25,7 +25,7 @@ export function TaskList({
   onToggleTaskSelection,
   onStatusChange,
   onDelete,
-}: TaskListProps) {
+}: TaskListProps) => {
   if (tasks.length === 0) {
     return (
       <Paper className="empty-state" radius="md" withBorder>
@@ -69,4 +69,4 @@ export function TaskList({
       ))}
     </SimpleGrid>
   );
-}
+};

@@ -32,7 +32,7 @@ type TaskItemProps = {
   onDelete: (id: number) => Promise<void>;
 };
 
-export function TaskItem({
+export const TaskItem = ({
   task,
   isSelected = false,
   isChangingStatus = false,
@@ -40,7 +40,7 @@ export function TaskItem({
   onToggleSelect,
   onStatusChange,
   onDelete,
-}: TaskItemProps) {
+}: TaskItemProps) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const isBusy = isChangingStatus || isDeleting;
 
@@ -179,4 +179,4 @@ export function TaskItem({
       </Modal>
     </>
   );
-}
+};

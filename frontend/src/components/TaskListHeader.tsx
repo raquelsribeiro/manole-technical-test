@@ -10,14 +10,14 @@ type TaskListHeaderProps = {
   onDeleteSelected: () => void;
 };
 
-export function TaskListHeader({
+export const TaskListHeader = ({
   totalTasks,
   selectedCount,
   isRefreshing,
   isDeletingSelected,
   onCreateTask,
   onDeleteSelected,
-}: TaskListHeaderProps) {
+}: TaskListHeaderProps) => {
   return (
     <Group justify="space-between" align="center" gap="md">
       <Stack gap={2}>
@@ -59,4 +59,4 @@ export function TaskListHeader({
       </Group>
     </Group>
   );
-}
+};

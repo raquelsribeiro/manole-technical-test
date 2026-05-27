@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type SubmitEvent } from "react";
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ type TaskFormProps = {
   onSubmit: (payload: CreateTaskPayload) => Promise<void>;
 };
 
-export function TaskForm({ opened, onClose, onSubmit }: TaskFormProps) {
+export const TaskForm = ({ opened, onClose, onSubmit }: TaskFormProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<TaskStatus>("pendente");
@@ -29,7 +29,7 @@ export function TaskForm({ opened, onClose, onSubmit }: TaskFormProps) {
     setStatus("pendente");
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!title.trim()) {
@@ -100,4 +100,4 @@ export function TaskForm({ opened, onClose, onSubmit }: TaskFormProps) {
       </Box>
     </Modal>
   );
-}
+};

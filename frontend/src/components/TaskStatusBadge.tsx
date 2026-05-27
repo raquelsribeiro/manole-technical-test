@@ -6,10 +6,10 @@ type TaskStatusBadgeProps = {
   status: TaskStatus;
 };
 
-export function TaskStatusBadge({ status }: TaskStatusBadgeProps) {
+export const TaskStatusBadge = ({ status }: TaskStatusBadgeProps) => {
   return (
     <Badge color={taskStatusColors[status]} variant="light">
       {taskStatusLabels[status]}
     </Badge>
   );
-}
+};
